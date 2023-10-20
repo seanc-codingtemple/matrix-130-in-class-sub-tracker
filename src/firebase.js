@@ -6,14 +6,8 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD_5VyGtq8MZbVOE6NDxMu_N0iT-omFszo",
-  authDomain: "matrix-130-live-sub-tracker.firebaseapp.com",
-  projectId: "matrix-130-live-sub-tracker",
-  storageBucket: "matrix-130-live-sub-tracker.appspot.com",
-  messagingSenderId: "744441548382",
-  appId: "1:744441548382:web:c264a773565b6915fdaecf"
-};
+import firebaseConfig from './firebaseConfig'
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
