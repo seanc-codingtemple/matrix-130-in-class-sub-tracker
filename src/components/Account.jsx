@@ -41,16 +41,19 @@ const Account = () => {
   };
   // Read subscription from Firebase
   useEffect(() => {
-    const q = query(collection(db, 'subscriptions'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      let subscriptionsArr = [];
-      querySnapshot.forEach((sub) => {
-        subscriptionsArr.push({ ...sub.data(), id: sub.id });
+    if (user && user.uid) {
+      const q = query(collection(db, 'subscriptions'), where('userID', '==', user.uid));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let subscriptionsArr = [];
+        querySnapshot.forEach((sub) => {
+          subscriptionsArr.push({ ...sub.data(), id: sub.id });
+        });
+        setSubscriptions(subscriptionsArr);
       });
-      setSubscriptions(subscriptionsArr);
-    });
-    return () => unsubscribe;
-  }, []);
+      return () => unsubscribe;
+    }
+  }, [user]);
+  
 
   // Create subscription in Firebase
 
@@ -127,15 +130,18 @@ const Account = () => {
   };
 
   return (
-    <div className='max-w-[600px] mx-auto my-16 p-4'>
-      <h1 className='text-2xl font-bold py-4'>Account</h1>
-      <p>User Email:{user && user.email}</p>
-      <button onClick={handleLogout} className='border px-6 py-2 my-4 '>
+    <div className='max-w-[800px] mx-auto my-16 p-4'>
+      <h1 className='flex justify-center text-2xl font-bold py-4'>Account</h1>
+      <p className='flex justify-center'>User Email:{user && user.email}</p>
+      <div className='flex justify-center items-center my-4'>
+    <button onClick={handleLogout} className='border px-6 py-2'>
         Logout
-      </button>
+    </button>
+</div>
+
       <form
         onSubmit={createSubscription}
-        className='m-4 flex-col justify-between'
+        className='max-w-[600px] m-4 flex-col justify-between'
       >
         <input
           value={createFormData.service}
@@ -177,37 +183,53 @@ const Account = () => {
           placeholder='Add some notes...'
           name='notes'
         />
+                        <div className='flex justify-left'>
+
         <button
-          className='border p-4 ml-2 mt-2 bg-purple-500 text-slate-100'
+          className=' border p-4 ml-2 mt-2 bg-purple-500 text-slate-100'
           type='submit'
         >
           Add New Subscription
         </button>
+        </div>
       </form>
+      
+     
+      <div className='max-w-full'>
       {subscriptions.map((subscription) => {
         const dateString = subscription.renewalDate.toDate().toDateString();
         const isEditingThisSubscription =
           editingSubscriptionId === subscription.id;
         return (
           <li
-            key={subscription.id}
-            className='flex justify-between bg-green-500 p-4 my-2 capitalize rounded-3xl'
-          >
-            <div className='flex '>
-              <p className='ml-2 cursor-pointer'>
-                Subscription: {subscription.service}
-              </p>
-              <p className='ml-2 cursor-pointer'>$ {subscription.cost}</p>
+        key={subscription.id}
+        className='flex flex-col bg-green-500 p-4 my-2 capitalize rounded-3xl'
+      >
+        <div className="flex justify-between">
+          <div className='flex '>
+            <div className='ml-2 cursor-pointer'>
+              Subscription: {subscription.service} |
             </div>
-            <p className='ml-2 cursor-pointer '> Renew Date: {dateString}</p>
-            <button onClick={() => deleteSubscription(subscription.id)}>
+            <div className='ml-2 cursor-pointer'>
+              Cost: ${subscription.cost} |
+            </div>
+            <div className='ml-2 cursor-pointer'>
+              Renew Date: {dateString}
+            </div>
+          </div>
+          <div>
+            <button className='mr-2' onClick={() => deleteSubscription(subscription.id)}>
               <MdOutlineRemoveCircle size={30} />
             </button>
             <button onClick={() => startEditing(subscription)}>
               <GrEdit size={30} />
             </button>
+          </div>
+        </div>
+            
+            
             {isEditingThisSubscription && (
-              <div>
+              <div className='mt-4'>
                 <h3>Edit Subscription</h3>
                 <input
                   value={editFormData.service}
@@ -249,18 +271,26 @@ const Account = () => {
                   placeholder='Add some notes...'
                   name='notes'
                 />
+                <div className='flex justify-end'>
                 <button
                   className='border p-4 ml-2 mt-2 bg-purple-500 text-slate-100'
                   onClick={() => updateSubscription(subscription.id)}
                 >
-                  Add New Subscription
+                  Update Subscription
                 </button>
+                </div>
               </div>
+              
             )}
           </li>
+          
         );
+        
       })}
     </div>
+    </div>
+    
+    
   );
 };
 
