@@ -4,19 +4,20 @@ import SignUp from './components/SignUp';
 import Account from './components/Account';
 import { AuthContextProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/NavbarSidebar/Navbar';
 
 function App() {
   return (
     <div >
-     <h1 className="text-3xl font-bold underline">
-      Subscription Tracker with FirebaseAuth/TailwindCSS/React/Firestore
-    </h1>
+     
     <AuthContextProvider>
+    <Navbar/>
     <Routes>
         <Route path='/' element={<SignIn/>}/>
         <Route path='/signup' element={<SignUp/>}/>
         <Route path='account' element={<ProtectedRoute><Account/></ProtectedRoute>}/>
       </Routes>
+     
       </AuthContextProvider>
     </div>
   );
